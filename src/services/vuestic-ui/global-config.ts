@@ -3,7 +3,10 @@ import colors from './themes'
 import { defineVuesticConfig } from 'vuestic-ui'
 
 export default defineVuesticConfig({
-  colors,
+  colors: {
+    ...colors,
+    currentPresetName: 'dark', // Set the default theme
+  },
   icons: iconsConfig,
   breakpoint: {
     enabled: true,

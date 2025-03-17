@@ -23,6 +23,6 @@ const { t } = useI18n()
 
 const options = [
   { label: t('buttonSelect.dark'), value: 'dark' },
-  { label: t('buttonSelect.light'), value: 'light' },
+  //{ label: t('buttonSelect.light'), value: 'light' },
 ]
 </script>

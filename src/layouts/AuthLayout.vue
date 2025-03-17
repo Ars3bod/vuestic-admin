@@ -2,7 +2,7 @@
   <VaLayout v-if="breakpoint.lgUp" class="h-screen bg-[var(--va-background-secondary)]">
     <template #left>
       <RouterLink
-        class="bg-primary h-full flex items-center justify-center"
+        class="h-full flex items-center justify-center"
         style="width: 35vw"
         to="/"
         aria-label="Visit homepage"

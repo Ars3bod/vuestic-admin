@@ -26,6 +26,7 @@ module.exports = {
         danger: 'var(--va-danger)',
         warning: 'var(--va-warning)',
         backgroundPrimary: 'var(--va-background-primary)',
+        darBackgroundPrimary: 'var(--va-dark-background-primary)',
         backgroundSecondary: 'var(--va-background-secondary)',
         backgroundElement: 'var(--va-background-element)',
         backgroundCardPrimary: 'var(--va-background-card-primary)',

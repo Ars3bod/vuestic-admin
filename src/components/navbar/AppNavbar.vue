@@ -12,7 +12,7 @@
           />
         </Transition>
         <RouterLink to="/" aria-label="Visit home page">
-          <VuesticLogo />
+          <VuesticLogo style="margin-left: 1rem" />
         </RouterLink>
       </div>
     </template>
