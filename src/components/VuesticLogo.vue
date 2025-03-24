@@ -6,11 +6,4 @@
   </svg>
 </template>
 
-<script lang="ts" setup>
-// const colorsComputed = computed(() => {
-//   return {
-//     start: getColor(props.start),
-//     end: getColor(props.end || props.start),
-//   }
-// })
-</script>
+<script lang="ts" setup></script>
