@@ -2,27 +2,103 @@
 import { defineVaDataTableColumns, useModal } from 'vuestic-ui'
 import { User, UserRole } from '../types'
 import UserAvatar from './UserAvatar.vue'
-import { PropType, computed, toRef } from 'vue'
+import { PropType, computed } from 'vue'
 import { Pagination, Sorting } from '../../../data/pages/users'
 import { useVModel } from '@vueuse/core'
-import { Project } from '../../projects/types'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+//import { Project } from '../../projects/types'
+
+// Reactive state for user data and loading state
+const userList = ref<User[]>([])
+const isLoading = ref(true)
 
 const columns = defineVaDataTableColumns([
   { label: 'Full Name', key: 'fullname', sortable: true },
   { label: 'Email', key: 'email', sortable: true },
   { label: 'Username', key: 'username', sortable: true },
   { label: 'Role', key: 'role', sortable: true },
-  { label: 'Projects', key: 'projects', sortable: true },
+  // { label: 'Tasks', key: 'tasks', sortable: true },
   { label: ' ', key: 'actions', align: 'right' },
 ])
+
+// Function to fetch users from the API
+const fetchUsers = async () => {
+  try {
+    isLoading.value = true
+    // Get token from localStorage (adjust if using Vuex/Pinia)
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      console.error('No authentication token found')
+      return
+    }
+
+    // Send request with Authorization header
+    const response = await axios.get('http://localhost:5001/api/admin/users', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    userList.value = response.data.map((user) => ({
+      id: user.id,
+      fullname: user.name || 'N/A', // Handle empty names
+      email: user.email || 'N/A',
+      username: user.email ? user.email.split('@')[0] : 'N/A', // Extract username
+      role: user.role || 'N/A',
+      phone: user.phone || 'N/A',
+      category: user.category || 'N/A',
+      dateOfBirth: user.date_of_birth ? new Date(user.date_of_birth).toLocaleDateString() : 'N/A',
+      updateDate: user.update_date ? new Date(user.update_date).toLocaleString() : 'N/A',
+      createdAt: user.createdAt ? new Date(user.createdAt).toLocaleString() : 'N/A',
+    }))
+  } catch (error) {
+    console.error('Error fetching users:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const deleteUser = async (user) => {
+  if (!user.id) {
+    console.error('User ID is missing')
+    return
+  }
+
+  try {
+    loading.value = true
+
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      console.error('No authentication token found')
+      return
+    }
+
+    await axios.delete(`http://localhost:5001/api/auth/${user.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    // Remove user from local list after successful deletion
+    users.value = users.value.filter((u) => u.id !== user.id)
+
+    // Emit event if necessary (only if other parts of the app rely on it)
+    emit('delete-user', user)
+  } catch (error) {
+    console.error('Error deleting user:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Fetch users when the component is mounted
+onMounted(fetchUsers)
 
 const props = defineProps({
   users: {
     type: Array as PropType<User[]>,
-    required: true,
-  },
-  projects: {
-    type: Array as PropType<Project[]>,
     required: true,
   },
   loading: { type: Boolean, default: false },
@@ -38,14 +114,14 @@ const emit = defineEmits<{
   (event: 'update:sortingOrder', sortingOrder: Sorting['sortingOrder']): void
 }>()
 
-const users = toRef(props, 'users')
+//const users = toRef(props, 'users')
 const sortByVModel = useVModel(props, 'sortBy', emit)
 const sortingOrderVModel = useVModel(props, 'sortingOrder', emit)
 
 const roleColors: Record<UserRole, string> = {
-  admin: 'danger',
-  user: 'background-element',
-  owner: 'warning',
+  admin: 'primary',
+  business: 'success',
+  freelancer: 'warning',
 }
 
 const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagination.perPage))
@@ -63,34 +139,9 @@ const onUserDelete = async (user: User) => {
   })
 
   if (agreed) {
-    emit('delete-user', user)
+    deleteUser(user)
+    //emit('delete-user', usxxer)
   }
-}
-
-const formatProjectNames = (projects: Project['id'][]) => {
-  const names = projects.reduce((acc, p) => {
-    const project = props.projects?.find(({ id }) => p === id)
-
-    if (project) {
-      acc.push(project.project_name)
-    }
-
-    return acc
-  }, [] as string[])
-  if (names.length === 0) return 'No projects'
-  if (names.length <= 2) {
-    return names.map((name) => name).join(', ')
-  }
-
-  return (
-    names
-      .slice(0, 2)
-      .map((name) => name)
-      .join(', ') +
-    ' + ' +
-    (names.length - 2) +
-    ' more'
-  )
 }
 </script>
 
@@ -99,8 +150,8 @@ const formatProjectNames = (projects: Project['id'][]) => {
     v-model:sort-by="sortByVModel"
     v-model:sorting-order="sortingOrderVModel"
     :columns="columns"
-    :items="users"
-    :loading="$props.loading"
+    :items="userList"
+    :loading="isLoading"
   >
     <template #cell(fullname)="{ rowData }">
       <div class="flex items-center gap-2 max-w-[230px] ellipsis">
@@ -125,21 +176,15 @@ const formatProjectNames = (projects: Project['id'][]) => {
       <VaBadge :text="rowData.role" :color="roleColors[rowData.role as UserRole]" />
     </template>
 
-    <template #cell(projects)="{ rowData }">
-      <div class="ellipsis max-w-[300px] lg:max-w-[450px]">
-        {{ formatProjectNames(rowData.projects) }}
-      </div>
-    </template>
-
     <template #cell(actions)="{ rowData }">
       <div class="flex gap-2 justify-end">
-        <VaButton
+        <!-- <VaButton
           preset="primary"
           size="small"
           icon="mso-edit"
           aria-label="Edit user"
           @click="$emit('edit-user', rowData as User)"
-        />
+        /> -->
         <VaButton
           preset="primary"
           size="small"

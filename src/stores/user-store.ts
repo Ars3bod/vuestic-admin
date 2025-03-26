@@ -1,23 +1,51 @@
 import { defineStore } from 'pinia'
 
+// Define the User type
+interface User {
+  name?: string
+  email?: string
+  joining_date?: string
+  image?: string
+  is2FAEnabled?: boolean
+  id?: number | null
+  role?: string
+  phone?: string
+  category?: string
+  date_of_birth?: string
+}
+
 export const useUserStore = defineStore('user', {
-  state: () => {
-    return {
-      userName: 'Vasili Savitski',
-      email: 'vasili@gmail.com',
-      memberSince: '8/12/2020',
-      pfp: 'https://picsum.photos/id/22/200/300',
-      is2FAEnabled: false,
-    }
-  },
+  state: () => ({
+    userName: '',
+    email: '',
+    memberSince: '',
+    pfp: '',
+    is2FAEnabled: false,
+    id: null as number | null,
+    role: '',
+    phone: '',
+    category: '',
+    date_of_birth: '',
+    joining_date: '',
+  }),
 
   actions: {
-    toggle2FA() {
-      this.is2FAEnabled = !this.is2FAEnabled
+    setUser(user: User) {
+      this.userName = user.name || 'Unknown User'
+      this.email = user.email || ''
+      this.memberSince = user.joining_date ? new Date(user.joining_date).toLocaleDateString() : ''
+      this.pfp = user.image || 'https://picsum.photos/200/300'
+      this.is2FAEnabled = user.is2FAEnabled || false
+      this.id = user.id || null
+      this.role = user.role || ''
+      this.phone = user.phone || ''
+      this.category = user.category || ''
+      this.date_of_birth = user.date_of_birth || ''
+      this.joining_date = user.joining_date || ''
     },
 
-    changeUserName(userName: string) {
-      this.userName = userName
+    clearUser() {
+      this.$reset()
     },
   },
 })

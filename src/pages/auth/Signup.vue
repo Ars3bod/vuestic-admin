@@ -12,6 +12,20 @@
       label="Email"
       type="email"
     />
+    <VaInput
+      v-model="formData.birthDate"
+      :rules="[(v) => !!v || 'Birth date is required']"
+      class="mb-4"
+      label="Birth Date"
+      type="date"
+    />
+    <VaInput
+      v-model:model-value="formData.fullname"
+      :rules="[(v) => !!v || 'Full name field is required']"
+      class="mb-4"
+      label="Full Name"
+    />
+    <VaInput v-model="formData.phone" :rules="[(v) => !!v || 'Phone field is required']" class="mb-4" label="Phone" />
     <VaValue v-slot="isPasswordVisible" :default-value="false">
       <VaInput
         ref="password1"
@@ -60,6 +74,7 @@
 </template>
 
 <script lang="ts" setup>
+import axios from 'axios'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
@@ -72,15 +87,36 @@ const formData = reactive({
   email: '',
   password: '',
   repeatPassword: '',
+  birthDate: '', // Add birth date field
+  fullname: '',
+  phone: '',
 })
 
-const submit = () => {
-  if (validate()) {
+const submit = async () => {
+  const isValid = validate()
+  if (!isValid) return
+
+  try {
+    await axios.post('http://localhost:5001/api/auth/register', {
+      email: formData.email,
+      password: formData.password,
+      date_of_birth: formData.birthDate,
+      role: 'admin',
+      name: formData.fullname,
+      phone: formData.phone,
+    })
+
     init({
-      message: "You've successfully signed up",
+      message: 'You have successfully signed up!',
       color: 'success',
     })
-    push({ name: 'dashboard' })
+
+    push({ name: 'login' }) // Redirect to dashboard after successful registration
+  } catch (error) {
+    init({
+      message: (error as any)?.response?.data?.message || 'Registration failed. Please try again.',
+      color: 'danger',
+    })
   }
 }
 

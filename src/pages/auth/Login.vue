@@ -2,9 +2,10 @@
   <VaForm ref="form" @submit.prevent="submit">
     <h1 class="font-semibold text-4xl mb-4">Log in</h1>
     <p class="text-base mb-4 leading-5">
-      New to Vuestic?
+      New to Experience Edge Admin?
       <RouterLink :to="{ name: 'signup' }" class="font-semibold text-primary">Sign up</RouterLink>
     </p>
+
     <VaInput
       v-model="formData.email"
       :rules="[validators.required, validators.email]"
@@ -12,6 +13,7 @@
       label="Email"
       type="email"
     />
+
     <VaValue v-slot="isPasswordVisible" :default-value="false">
       <VaInput
         v-model="formData.password"
@@ -39,20 +41,30 @@
     </div>
 
     <div class="flex justify-center mt-4">
-      <VaButton class="w-full" @click="submit"> Login</VaButton>
+      <VaButton class="w-full" :disabled="loading" @click="submit">
+        {{ loading ? 'Logging in...' : 'Login' }}
+      </VaButton>
     </div>
+
+    <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
   </VaForm>
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 import { validators } from '../../services/utils'
+import axios from 'axios'
+import { useAuthStore } from '../../stores/auth'
+import { useUserStore } from '../../stores/user-store'
+
+const userStore = useUserStore()
 
 const { validate } = useForm('form')
 const { push } = useRouter()
 const { init } = useToast()
+const authStore = useAuthStore()
 
 const formData = reactive({
   email: '',
@@ -60,10 +72,50 @@ const formData = reactive({
   keepLoggedIn: false,
 })
 
-const submit = () => {
-  if (validate()) {
+const loading = ref(false)
+const errorMessage = ref('')
+
+onMounted(async () => {
+  if (authStore.isAuthenticated) {
+    try {
+      await axios.post('/api/logout') // Call logout API
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+
+    authStore.logout() // Clear auth state
+  }
+})
+
+const submit = async () => {
+  if (!validate()) return
+
+  loading.value = true
+  errorMessage.value = ''
+
+  try {
+    const response = await axios.post('http://localhost:5001/api/auth/login', {
+      email: formData.email,
+      password: formData.password,
+    })
+
+    const { token, user } = response.data
+
+    // Save authentication details in Pinia store
+    authStore.setAuth(token, user)
+    if (response.data.user) {
+      userStore.setUser(response.data.user)
+    }
+
+    // Show success message
     init({ message: "You've successfully logged in", color: 'success' })
+
+    // Redirect to dashboard
     push({ name: 'dashboard' })
+  } catch (error) {
+    errorMessage.value = error.response?.data?.message || 'Login failed. Please try again.'
+  } finally {
+    loading.value = false
   }
 }
 </script>

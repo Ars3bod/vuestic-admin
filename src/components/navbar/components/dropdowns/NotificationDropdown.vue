@@ -3,7 +3,7 @@
     <template #anchor>
       <VaButton preset="secondary" color="textPrimary">
         <VaBadge overlap>
-          <template #text> 2+</template>
+          <!-- <template #text> </template> -->
           <VaIconNotification class="notification-dropdown__icon" />
         </VaBadge>
       </VaButton>
@@ -54,69 +54,63 @@ interface INotification {
   updateTimestamp: Date
 }
 
-const makeDateFromNow = (timeFromNow: number) => {
-  const date = new Date()
-  date.setTime(date.getTime() + timeFromNow)
-  return date
-}
-
 const notifications: INotification[] = [
-  {
-    message: '4 pending requests',
-    icon: 'favorite_outline',
-    id: 1,
-    separator: true,
-    updateTimestamp: makeDateFromNow(-3 * 60 * 1000),
-  },
-  {
-    message: '3 new reports',
-    icon: 'calendar_today',
-    id: 2,
-    separator: true,
-    updateTimestamp: makeDateFromNow(-12 * 60 * 60 * 1000),
-  },
-  {
-    message: 'Whoops! Your trial period has expired.',
-    icon: 'error_outline',
-    id: 3,
-    separator: true,
-    updateTimestamp: makeDateFromNow(-2 * 24 * 60 * 60 * 1000),
-  },
-  {
-    message: 'It looks like your timezone is set incorrectly, please change it to avoid issues with Memory.',
-    icon: 'schedule',
-    id: 4,
-    updateTimestamp: makeDateFromNow(-2 * 7 * 24 * 60 * 60 * 1000),
-  },
-  {
-    message: '2 new team members added',
-    icon: 'group_add',
-    id: 5,
-    separator: false,
-    updateTimestamp: makeDateFromNow(-3 * 60 * 1000),
-  },
-  {
-    message: 'Monthly budget exceeded by 10%',
-    icon: 'trending_up',
-    id: 6,
-    separator: true,
-    updateTimestamp: makeDateFromNow(-3 * 24 * 60 * 60 * 1000),
-  },
-  {
-    message: '7 tasks are approaching their deadlines',
-    icon: 'alarm',
-    id: 7,
-    separator: false,
-    updateTimestamp: makeDateFromNow(-5 * 60 * 60 * 1000),
-  },
-  {
-    message: 'New software update available',
-    icon: 'system_update',
-    id: 8,
-    separator: true,
-    updateTimestamp: makeDateFromNow(-1 * 24 * 60 * 60 * 1000),
-  },
-].sort((a, b) => new Date(b.updateTimestamp).getTime() - new Date(a.updateTimestamp).getTime())
+  // {
+  //   message: '4 pending requests',
+  //   icon: 'favorite_outline',
+  //   id: 1,
+  //   separator: true,
+  //   updateTimestamp: makeDateFromNow(-3 * 60 * 1000),
+  // },
+  // {
+  //   message: '3 new reports',
+  //   icon: 'calendar_today',
+  //   id: 2,
+  //   separator: true,
+  //   updateTimestamp: makeDateFromNow(-12 * 60 * 60 * 1000),
+  // },
+  // {
+  //   message: 'Whoops! Your trial period has expired.',
+  //   icon: 'error_outline',
+  //   id: 3,
+  //   separator: true,
+  //   updateTimestamp: makeDateFromNow(-2 * 24 * 60 * 60 * 1000),
+  // },
+  // {
+  //   message: 'It looks like your timezone is set incorrectly, please change it to avoid issues with Memory.',
+  //   icon: 'schedule',
+  //   id: 4,
+  //   updateTimestamp: makeDateFromNow(-2 * 7 * 24 * 60 * 60 * 1000),
+  // },
+  // {
+  //   message: '2 new team members added',
+  //   icon: 'group_add',
+  //   id: 5,
+  //   separator: false,
+  //   updateTimestamp: makeDateFromNow(-3 * 60 * 1000),
+  // },
+  // {
+  //   message: 'Monthly budget exceeded by 10%',
+  //   icon: 'trending_up',
+  //   id: 6,
+  //   separator: true,
+  //   updateTimestamp: makeDateFromNow(-3 * 24 * 60 * 60 * 1000),
+  // },
+  // {
+  //   message: '7 tasks are approaching their deadlines',
+  //   icon: 'alarm',
+  //   id: 7,
+  //   separator: false,
+  //   updateTimestamp: makeDateFromNow(-5 * 60 * 60 * 1000),
+  // },
+  // {
+  //   message: 'New software update available',
+  //   icon: 'system_update',
+  //   id: 8,
+  //   separator: true,
+  //   updateTimestamp: makeDateFromNow(-1 * 24 * 60 * 60 * 1000),
+  // },
+] //.sort((a, b) => new Date(b.updateTimestamp).getTime() - new Date(a.updateTimestamp).getTime())
 
 const TIME_NAMES = {
   second: 1000,

@@ -3,7 +3,6 @@ import { PropType, computed, ref, watch } from 'vue'
 import { useForm } from 'vuestic-ui'
 import { User, UserRole } from '../types'
 import UserAvatar from './UserAvatar.vue'
-import { useProjects } from '../../projects/composables/useProjects'
 import { validators } from '../../../services/utils'
 
 const props = defineProps({
@@ -20,11 +19,17 @@ const props = defineProps({
 const defaultNewUser: Omit<User, 'id'> = {
   avatar: '',
   fullname: '',
-  role: 'user',
+  role: 'admin',
   username: '',
+  date_of_birth: '',
   notes: '',
   email: '',
   active: true,
+  password: '',
+  phone: '',
+  category: '',
+  joining_date: '',
+  update_date: '',
   projects: [],
 }
 
@@ -46,23 +51,23 @@ defineExpose({
   isFormHasUnsavedChanges,
 })
 
-const { projects } = useProjects({ pagination: ref({ page: 1, perPage: 9999, total: 10 }) })
+// const { projects } = useProjects({ pagination: ref({ page: 1, perPage: 9999, total: 10 }) })
 
-watch(
-  [() => props.user, projects],
-  () => {
-    if (!props.user) {
-      return
-    }
+// watch(
+//   [() => props.user, projects],
+//   () => {
+//     if (!props.user) {
+//       return
+//     }
 
-    newUser.value = {
-      ...props.user,
-      projects: props.user.projects.filter((projectId) => projects.value.find(({ id }) => id === projectId)),
-      avatar: props.user.avatar || '',
-    }
-  },
-  { immediate: true },
-)
+//     newUser.value = {
+//       ...props.user,
+//       projects: props.user.projects.filter((projectId) => projects.value.find(({ id }) => id === projectId)),
+//       avatar: props.user.avatar || '',
+//     }
+//   },
+//   { immediate: true },
+// )
 
 const avatar = ref<File>()
 
@@ -86,46 +91,23 @@ const onSave = () => {
 
 const roleSelectOptions: { text: Capitalize<Lowercase<UserRole>>; value: UserRole }[] = [
   { text: 'Admin', value: 'admin' },
-  { text: 'User', value: 'user' },
-  { text: 'Owner', value: 'owner' },
+  { text: 'Business', value: 'business' },
+  { text: 'Freelancer', value: 'freelancer' },
 ]
 </script>
 
 <template>
   <VaForm v-slot="{ isValid }" ref="add-user-form" class="flex-col justify-start items-start gap-4 inline-flex w-full">
-    <VaFileUpload
-      v-model="avatar"
-      type="single"
-      hide-file-list
-      class="self-stretch justify-start items-center gap-4 inline-flex"
-    >
-      <UserAvatar :user="newUser" size="large" />
-      <VaButton preset="primary" size="small">Add image</VaButton>
-      <VaButton
-        v-if="avatar"
-        preset="primary"
-        color="danger"
-        size="small"
-        icon="delete"
-        class="z-10"
-        @click.stop="avatar = undefined"
-      />
-    </VaFileUpload>
+    <UserAvatar :user="newUser" size="large" />
+
     <div class="self-stretch flex-col justify-start items-start gap-4 flex">
       <div class="flex gap-4 flex-col sm:flex-row w-full">
         <VaInput
           v-model="newUser.fullname"
           label="Full name"
-          class="w-full sm:w-1/2"
+          class="w-full sm:w-full"
           :rules="[validators.required]"
           name="fullName"
-        />
-        <VaInput
-          v-model="newUser.username"
-          label="Username"
-          class="w-full sm:w-1/2"
-          :rules="[validators.required]"
-          name="username"
         />
       </div>
       <div class="flex gap-4 flex-col sm:flex-row w-full">
@@ -137,38 +119,26 @@ const roleSelectOptions: { text: Capitalize<Lowercase<UserRole>>; value: UserRol
           name="email"
         />
         <VaSelect
-          v-model="newUser.projects"
-          label="Projects"
+          v-model="newUser.role"
+          label="Role"
           class="w-full sm:w-1/2"
-          :options="projects"
-          value-by="id"
-          text-by="project_name"
+          :options="roleSelectOptions"
           :rules="[validators.required]"
-          name="projects"
-          multiple
-          :max-visible-options="2"
+          name="role"
+          value-by="value"
         />
       </div>
-
-      <div class="flex gap-4 w-full">
-        <div class="w-1/2">
-          <VaSelect
-            v-model="newUser.role"
-            label="Role"
-            class="w-full"
-            :options="roleSelectOptions"
-            :rules="[validators.required]"
-            name="role"
-            value-by="value"
-          />
-        </div>
-
-        <div class="flex items-center w-1/2 mt-4">
-          <VaCheckbox v-model="newUser.active" label="Active" class="w-full" name="active" />
-        </div>
+      <div class="flex gap-4 flex-col sm:flex-row w-full">
+        <VaInput v-model="newUser.phone" label="Phone" class="w-full sm:w-1/2" name="phone" />
+        <VaInput
+          v-model="newUser.date_of_birth"
+          label="Date of birth"
+          class="w-full sm:w-1/2"
+          :rules="[validators.required]"
+          type="date"
+          name="date_of_birth"
+        />
       </div>
-
-      <VaTextarea v-model="newUser.notes" label="Notes" class="w-full" name="notes" />
       <div class="flex gap-2 flex-col-reverse items-stretch justify-end w-full sm:flex-row sm:items-center">
         <VaButton preset="secondary" color="secondary" @click="$emit('close')">Cancel</VaButton>
         <VaButton :disabled="!isValid" @click="onSave">{{ saveButtonLabel }}</VaButton>

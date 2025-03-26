@@ -1,4 +1,5 @@
-import { Ref, ref, unref, watch, computed } from 'vue'
+import { ref, unref, watch, computed } from 'vue'
+import axios from 'axios' // Import axios for API requests
 import { v4 as uuid } from 'uuid'
 import type { Filters, Pagination, Sorting } from '../../../data/pages/users'
 import { User } from '../types'
@@ -36,7 +37,6 @@ export const useUsers = (options?: {
   watch(
     filters,
     () => {
-      // Reset pagination to first page when filters changed
       pagination.value.page = 1
       fetch()
     },
@@ -46,33 +46,10 @@ export const useUsers = (options?: {
   fetch()
 
   const users = computed(() => {
-    const getSortItem = (obj: any, sortBy: string) => {
-      if (sortBy === 'projects') {
-        return obj.projects.map((project: any) => project).join(', ')
-      }
-
-      return obj[sortBy]
-    }
-
-    const paginated = usersStore.items.slice(
+    return usersStore.items.slice(
       (pagination.value.page - 1) * pagination.value.perPage,
       pagination.value.page * pagination.value.perPage,
     )
-
-    if (sorting.value.sortBy && sorting.value.sortingOrder) {
-      paginated.sort((a, b) => {
-        const first = getSortItem(a, sorting.value.sortBy!)
-        const second = getSortItem(b, sorting.value.sortBy!)
-        if (first > second) {
-          return sorting.value.sortingOrder === 'asc' ? 1 : -1
-        }
-        if (first < second) {
-          return sorting.value.sortingOrder === 'asc' ? -1 : 1
-        }
-        return 0
-      })
-    }
-    return paginated
   })
 
   return {
@@ -89,7 +66,37 @@ export const useUsers = (options?: {
     async add(user: User) {
       isLoading.value = true
       try {
-        return await usersStore.add(user)
+        const response = await axios.post('http://localhost:5001/api/auth/register', {
+          name: user.fullname,
+          email: user.email,
+          password: user.password,
+          role: user.role,
+          phone: user.phone,
+          category: user.category,
+          date_of_birth: user.date_of_birth,
+          joining_date: new Date().toISOString(),
+          update_date: new Date().toISOString(),
+        })
+
+        if (response.data && response.data.user) {
+          const newUser = {
+            id: response.data.user.id,
+            customId: response.data.user.custom_id,
+            fullname: response.data.user.name,
+            email: response.data.user.email,
+            role: response.data.user.role,
+            phone: response.data.user.phone,
+            category: response.data.user.category,
+            date_of_birth: response.data.user.date_of_birth,
+            joining_date: response.data.user.joining_date,
+            update_date: response.data.user.update_date,
+            avatar: response.data.user.image, // Store image URL if provided
+          }
+
+          usersStore.items.push(newUser) // Update local store with the new user
+          pagination.value.total += 1 // Increment total users count
+          return newUser
+        }
       } catch (e) {
         error.value = e
       } finally {

@@ -36,6 +36,10 @@ watchEffect(() => {
 })
 
 const onUserSaved = async (user: User) => {
+  if (!user.password) {
+    user.password = 'Default@123' // You can change this or prompt the user for a password
+  }
+
   if (user.avatar.startsWith('blob:')) {
     const blob = await fetch(user.avatar).then((r) => r.blob())
     const { publicUrl } = await usersApi.uploadAvatar(blob)
@@ -102,8 +106,8 @@ const beforeEditFormModalClose = async (hide: () => unknown) => {
             color="background-element"
             border-color="background-element"
             :options="[
-              { label: 'Active', value: true },
-              { label: 'Inactive', value: false },
+              //{ label: 'Active', value: true },
+              // { label: 'Inactive', value: false },
             ]"
           />
           <VaInput v-model="filters.search" placeholder="Search">

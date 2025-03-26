@@ -121,7 +121,21 @@ withDefaults(
 
 const isShown = ref(false)
 
+// Logout function
+// const logout = async () => {
+//   try {
+//     await axios.post('/api/logout') // Replace with your actual API endpoint
+//     authStore.logout() // Call logout method from Pinia store
+//     router.push({ name: 'login' }) // Redirect to login page
+//   } catch (error) {
+//     console.error('Logout failed:', error)
+//   }
+// }
+
 const resolveLinkAttribute = (item: ProfileListItem) => {
+  // if (item.name === 'logout') {
+  //   return { onClick: logout }
+  // }
   return item.to ? { to: { name: item.to } } : item.href ? { href: item.href, target: '_blank' } : {}
 }
 </script>

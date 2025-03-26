@@ -43,37 +43,37 @@ export default {
           name: 'payment-methods',
           displayName: 'menu.payment-methods',
         },
-        {
-          name: 'pricing-plans',
-          displayName: 'menu.pricing-plans',
-        },
+        // {
+        //   name: 'pricing-plans',
+        //   displayName: 'menu.pricing-plans',
+        // },
         {
           name: 'billing',
           displayName: 'menu.billing',
         },
       ],
     },
-    {
-      name: 'auth',
-      displayName: 'menu.auth',
-      meta: {
-        icon: 'login',
-      },
-      children: [
-        {
-          name: 'login',
-          displayName: 'menu.login',
-        },
-        {
-          name: 'signup',
-          displayName: 'menu.signup',
-        },
-        {
-          name: 'recover-password',
-          displayName: 'menu.recover-password',
-        },
-      ],
-    },
+    // {
+    //   name: 'auth',
+    //   displayName: 'menu.auth',
+    //   meta: {
+    //     icon: 'login',
+    //   },
+    //   children: [
+    //     {
+    //       name: 'login',
+    //       displayName: 'menu.login',
+    //     },
+    //     {
+    //       name: 'signup',
+    //       displayName: 'menu.signup',
+    //     },
+    //     {
+    //       name: 'recover-password',
+    //       displayName: 'menu.recover-password',
+    //     },
+    //   ],
+    // },
 
     {
       name: 'faq',
@@ -82,13 +82,13 @@ export default {
         icon: 'quiz',
       },
     },
-    {
-      name: '404',
-      displayName: 'menu.404',
-      meta: {
-        icon: 'vuestic-iconset-files',
-      },
-    },
+    // {
+    //   name: '404',
+    //   displayName: 'menu.404',
+    //   meta: {
+    //     icon: 'vuestic-iconset-files',
+    //   },
+    // },
     {
       name: 'preferences',
       displayName: 'menu.preferences',

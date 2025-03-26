@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-
+import { useAuthStore } from '../stores/auth' // Assuming you're using Pinia for auth state
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AppLayout from '../layouts/AppLayout.vue'
-
 import RouteViewComponent from '../layouts/RouterBypass.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -15,6 +14,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: AppLayout,
     redirect: { name: 'dashboard' },
+    meta: { requiresAuth: true }, // Protect all admin routes
     children: [
       {
         name: 'dashboard',
@@ -113,7 +113,6 @@ const router = createRouter({
     if (savedPosition) {
       return savedPosition
     }
-    // For some reason using documentation example doesn't scroll on page navigation.
     if (to.hash) {
       return { el: to.hash, behavior: 'smooth' }
     } else {
@@ -121,6 +120,17 @@ const router = createRouter({
     }
   },
   routes,
+})
+
+// Navigation Guard for Authentication
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore() // Get authentication state from Pinia
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/auth/login') // Redirect to login if user is not authenticated
+  } else {
+    next()
+  }
 })
 
 export default router

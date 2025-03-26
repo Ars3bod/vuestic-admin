@@ -24,8 +24,8 @@ const { getTeamOptions, getUserById } = useProjectUsers()
 <template>
   <VaCard>
     <VaCardTitle class="flex items-start justify-between">
-      <h1 class="card-title text-secondary font-bold uppercase">Projects</h1>
-      <VaButton preset="primary" size="small" to="/projects">View all projects</VaButton>
+      <h1 class="card-title text-secondary font-bold uppercase">Tasks</h1>
+      <VaButton preset="primary" size="small" to="/projects">View all Tasks</VaButton>
     </VaCardTitle>
     <VaCardContent>
       <div v-if="projects.length > 0">

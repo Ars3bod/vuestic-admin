@@ -54,7 +54,7 @@
     "404": "404",
     "faq": "FAQ",
     "users": "Users",
-    "projects": "Projects"
+    "projects": "Tasks"
   },
   "messages": {
     "all": "See all messages",
@@ -81,7 +81,7 @@
     "billing": "Billing",
     "faq": "FAQ",
     "helpAndSupport": "Help & support",
-    "projects": "Projects",
+    "projects": "Tasks",
     "account": "Account",
     "explore": "Explore"
   },
@@ -166,7 +166,7 @@
     "grow": "Tabs grow"
   },
   "helpAndSupport": "Help & support",
-  "aboutVuesticAdmin": "About Vuestic Admin",
+  "aboutVuesticAdmin": "About Experience Edge Admin",
   "supportAndConsulting": "Support & Consulting",
   "search": {
     "placeholder": "Search..."
